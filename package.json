@@ -1,0 +1,22 @@
+{
+  "name": "node-ecommerce",
+  "version": "1.0.0",
+  "description": "An Ecommerce API buuilt with node",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js"
+  },
+  "author": "Kolapo Opeoluwa Olamidun",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "express": "^4.17.1",
+    "express-async-handler": "^1.1.4",
+    "mongoose": "^5.12.3"
+  },
+  "devDependencies": {
+    "eslint": "^7.23.0"
+  }
+}
+ 
