@@ -3,6 +3,7 @@ const mongoose = require('mongoose')
 require('dotenv').config()
 const userRouter = require('./routes/userRouter')
 const productRouter = require('./routes/productRouter')
+const orderRouter = require('./routes/orderRouter')
 
 const app = express()
 app.use(express.json())
@@ -23,6 +24,7 @@ try{
 app.use('/api', userRouter)
 
 app.use('/api/products', productRouter)
+app.use('/api/orders', orderRouter)
 
 app.use((err, req, res, next) =>{
     res.status(500).send({message: err.message})
