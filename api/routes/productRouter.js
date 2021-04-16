@@ -28,6 +28,7 @@ const upload = multer({storage: storage,
 })
 const data = require('../data')
 const Product = require('../models/productModel')
+const { authUser } = require('../utils')
 
 const productRouter = express.Router()
 
@@ -37,7 +38,7 @@ productRouter.get('/', expressAsyncHandler(async(req, res) =>{
 }))
 
 
-productRouter.post('/', upload.single('image'), expressAsyncHandler(async(req, res) =>{
+productRouter.post('/', authUser, upload.single('image'), expressAsyncHandler(async(req, res) =>{
     console.log(req.file)
     const product = new Product({
         name: req.body.name,
@@ -48,7 +49,8 @@ productRouter.post('/', upload.single('image'), expressAsyncHandler(async(req, r
         price: req.body.price,
         countInStock: req.body.countInStock,
         rating: req.body.rating,
-        numReviews: req.body.numReviews
+        numReviews: req.body.numReviews,
+        user: req.user._id 
     })
 
     const productsCreated = await product.save()
