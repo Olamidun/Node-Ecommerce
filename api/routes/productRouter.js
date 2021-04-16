@@ -63,10 +63,19 @@ productRouter.patch('/:id', authUser, expressAsyncHandler(async(req, res) =>{
     const update = req.body
     const options = {new: true}
     const product = await Product.findByIdAndUpdate(id, update, options)
-    res.send({message: product} )
-    
+    res.send({message: 'Product updated', product: product})
 }))
 
+productRouter.delete('/:id', authUser, expressAsyncHandler(async(req, res) =>{
+    const id = req.params.id
+    const product = await Product.findByIdAndDelete(id)
+    res.send({message: 'Product has been deleted'})
+}))
+productRouter.get('/seed', expressAsyncHandler(async(req, res) =>{
+ const createdProducts = await Product.insertMany(data.products)
+
+ res.send({products: createdProducts})
+}))
 
 
 productRouter.get('/:id', expressAsyncHandler(async(req, res) =>{
