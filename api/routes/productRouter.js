@@ -67,11 +67,6 @@ productRouter.patch('/:id', authUser, expressAsyncHandler(async(req, res) =>{
     
 }))
 
-productRouter.get('/seed', expressAsyncHandler(async(req, res) =>{
- const createdProducts = await Product.insertMany(data.products)
-
- res.send({products: createdProducts})
-}))
 
 
 productRouter.get('/:id', expressAsyncHandler(async(req, res) =>{

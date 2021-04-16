@@ -6,12 +6,6 @@ const User = require('../models/userModels.js')
 const {generateToken} = require('../utils')
 const userRouter = express.Router()
 
-userRouter.get('/users', expressAsyncHandler(async (req, res) =>{
-    const createdUsers = await User.insertMany(data.users)
-    res.send({
-        createdUsers
-    })
-}))
 
 userRouter.post('/signin', expressAsyncHandler(async(req, res) =>{
     const user = await User.findOne({
