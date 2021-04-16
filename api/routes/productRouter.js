@@ -58,6 +58,15 @@ productRouter.post('/', authUser, upload.single('image'), expressAsyncHandler(as
     products: productsCreated})
 }))
 
+productRouter.patch('/:id', authUser, expressAsyncHandler(async(req, res) =>{
+    const id = req.params.id
+    const update = req.body
+    const options = {new: true}
+    const product = await Product.findByIdAndUpdate(id, update, options)
+    res.send({message: product} )
+    
+}))
+
 productRouter.get('/seed', expressAsyncHandler(async(req, res) =>{
  const createdProducts = await Product.insertMany(data.products)
 
