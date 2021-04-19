@@ -1,6 +1,8 @@
-let Flutterwave = require('./tryjson')
+require('dotenv').config()
+let Flutterwave = require('./tryjson');
 
-let flutterwave = new Flutterwave('xxxxxxxxxxxxxxxxx')
+console.log(`${process.env.key}`)
+let flutterwave = new Flutterwave(process.env.key)
 
 const payload = {"tx_ref": "ersddr434",
         "amount": "100",
