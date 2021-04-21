@@ -1,3 +1,4 @@
+const { response } = require('express')
 const express = require('express')
 const expressAsyncHandler = require('express-async-handler')
 const Order = require('../models/orderModel')
@@ -54,22 +55,8 @@ orderRouter.get('/:id/payment', expressAsyncHandler(async(req, res) =>{
                 "logo":"https://assets.piedpiper.com/logo.png"
             }
         }
-        const response = flutterwave.payment(payload).then(({data}) =>{
-            console.log(data);
-           return {
-                success: true,
-                response: data
-            }
-        })
-        .catch((err) =>{
-            console.log(err?.response?.data?.message)
-            return {
-                success: false,
-                message: err
-            }
-        })
-        console.log(response)
-        res.json({response})
+        const response = flutterwave.payment(payload)
+        res.send({response})
     }else{
         res.status(404).send({message: 'Order not found'})
     }
