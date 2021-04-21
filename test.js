@@ -1,5 +1,5 @@
 require('dotenv').config()
-let Flutterwave = require('./tryjson');
+let Flutterwave = require('./api/paymentConfig/payment');
 
 console.log(`${process.env.key}`)
 let flutterwave = new Flutterwave(process.env.key)

@@ -1,6 +1,8 @@
 const express = require('express')
 const expressAsyncHandler = require('express-async-handler')
 const Order = require('../models/orderModel')
+let Flutterwave = require('../paymentConfig/payment')
+require('dotenv').config()
 
 const orderRouter = express.Router()
 
@@ -31,4 +33,45 @@ orderRouter.get('/:id', expressAsyncHandler(async(req, res) =>{
 
 }))
 
+orderRouter.get('/:id/payment', expressAsyncHandler(async(req, res) =>{
+    const order = await Order.findById(req.params.id)
+    if(order){
+        let flutterwave = new Flutterwave(`${process.env.key}`)
+        let payload = {
+            "tx_ref": "ersddr434",
+                "amount": order.totalPrice,
+                "currency": "NGN",
+                "redirect_url": "https://google.com",
+                "payment_options": "card",
+                "customer":{
+                    "email": order.shippingAddress.email,
+                    "phonenumber": "08103087162",
+                    "name": order.shippingAddress.fullname,
+                },
+                "customizations":{
+                "title":"Pied Piper Payments",
+                "description":"Middleout isn't free. Pay the price",
+                "logo":"https://assets.piedpiper.com/logo.png"
+            }
+        }
+        const response = flutterwave.payment(payload).then(({data}) =>{
+            console.log(data);
+           return {
+                success: true,
+                response: data
+            }
+        })
+        .catch((err) =>{
+            console.log(err?.response?.data?.message)
+            return {
+                success: false,
+                message: err
+            }
+        })
+        console.log(response)
+        res.json({response})
+    }else{
+        res.status(404).send({message: 'Order not found'})
+    }
+}))
 module.exports = orderRouter

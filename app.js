@@ -5,7 +5,6 @@ const userRouter = require('./api/routes/userRouter')
 const productRouter = require('./api/routes/productRouter')
 const orderRouter = require('./api/routes/orderRouter')
 
-console.log(process.config())
 
 const app = express()
 app.use(express.json())
