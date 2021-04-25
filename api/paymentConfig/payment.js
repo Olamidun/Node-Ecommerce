@@ -1,4 +1,5 @@
 const axios = require('axios')
+const { json } = require('express')
 
 
 class Flutterwave {
@@ -6,27 +7,15 @@ class Flutterwave {
         this.secretKey = secretKey
     }
 
-    payment(payload) {
-       axios.post('https://api.flutterwave.com/v3/payments', payload   , {
+    async payment(payload) {
+     const res = await axios.post('https://api.flutterwave.com/v3/payments', payload, {
             headers: {
                 Authorization: `Bearer ${this.secretKey}`
             }
         })
-        .then((response) =>{
-            console.log(response.data)
-            return {
-                success: true,
-                response: response.data
-            }
-        })
-        .catch((err) =>{
-            return {
-                success: false,
-                response: err
-            }
-        })
-    }
-      
+    return res
+    } 
+
 }
 
 module.exports = Flutterwave

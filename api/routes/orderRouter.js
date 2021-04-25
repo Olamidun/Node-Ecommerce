@@ -1,4 +1,3 @@
-const { response } = require('express')
 const express = require('express')
 const expressAsyncHandler = require('express-async-handler')
 const Order = require('../models/orderModel')
@@ -36,6 +35,7 @@ orderRouter.get('/:id', expressAsyncHandler(async(req, res) =>{
 
 orderRouter.get('/:id/payment', expressAsyncHandler(async(req, res) =>{
     const order = await Order.findById(req.params.id)
+    // console.log(order)
     if(order){
         let flutterwave = new Flutterwave(`${process.env.key}`)
         let payload = {
@@ -55,8 +55,9 @@ orderRouter.get('/:id/payment', expressAsyncHandler(async(req, res) =>{
                 "logo":"https://assets.piedpiper.com/logo.png"
             }
         }
-        const response = flutterwave.payment(payload)
-        res.send({response})
+        const response = await flutterwave.payment(payload)
+        res.send(response.data)
+        
     }else{
         res.status(404).send({message: 'Order not found'})
     }
