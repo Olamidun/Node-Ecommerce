@@ -39,18 +39,6 @@ orderRouter.post('/', expressAsyncHandler(async(req, res) =>{
 }))
 
 orderRouter.get('/:id', expressAsyncHandler(async(req, res) =>{
-    // let reference = (length) =>{
-    //     var result = [];
-    //     var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    //     var charactersLength = characters.length;
-    //     for ( var i = 0; i < length; i++ ) {
-    //         result.push(characters.charAt(Math.floor(Math.random() * 
-    //         charactersLength)));
-    //     }
-    //     return result.join('');
-
-    // }
-    // console.log(reference(15))
     const order = await Order.findById(req.params.id)
     if(order){
         res.send(order)
