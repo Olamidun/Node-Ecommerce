@@ -1,5 +1,6 @@
 const express = require('express')
 const expressAsyncHandler = require('express-async-handler')
+const { getMaxListeners } = require('../models/orderModel')
 const Order = require('../models/orderModel')
 let Flutterwave = require('../paymentConfig/payment')
 require('dotenv').config()
@@ -68,7 +69,7 @@ orderRouter.get('/:id/payment', expressAsyncHandler(async(req, res) =>{
             "tx_ref": order.paymentReference,
                 "amount": order.totalPrice,
                 "currency": "NGN",
-                "redirect_url": "http://localhost:5001",
+                "redirect_url": `http://localhost:5001/api/orders/${order._id}/verifypayment`,
                 "payment_options": "card",
                 "customer":{
                     "email": order.shippingAddress.email,
@@ -92,15 +93,15 @@ orderRouter.get('/:id/payment', expressAsyncHandler(async(req, res) =>{
 
 orderRouter.get('/:id/verifypayment',  expressAsyncHandler(async(req, res) =>{
     const order = await Order.findById(req.params.id)
+    const transactionId = req.query.transaction_id
     if(order){
-        let response = await flutterwave.verifyPayment('2052945')
+        let response = await flutterwave.verifyPayment(transactionId)
         console.log(response)
         if(response.data.data.tx_ref === order.paymentReference && response.data.data.amount === order.totalPrice && response.data.status === "success"){
             order.isPaid = true
             order.paidAt = Date.now()
             const updatedOrder = await order.save()
             res.json({message: 'Your order has been successfully placed, thanks for using our platform', order: updatedOrder})
-            console.log(updatedOrder)
         } else {
             res.send({error: 'Your payment was not completed!!!'})
         }
