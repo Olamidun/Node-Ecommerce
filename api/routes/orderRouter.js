@@ -57,7 +57,7 @@ orderRouter.get('/:id/payment', expressAsyncHandler(async(req, res) =>{
             "tx_ref": order.paymentReference,
                 "amount": order.totalPrice,
                 "currency": "NGN",
-                "redirect_url": `http://localhost:5001/api/orders/${order._id}/verifypayment`,
+                "redirect_url": `http://localhost:5000/api/orders/${order._id}/verifypayment`,
                 "payment_options": "card",
                 "customer":{
                     "email": order.shippingAddress.email,
@@ -91,7 +91,7 @@ orderRouter.get('/:id/verifypayment',  expressAsyncHandler(async(req, res) =>{
             const updatedOrder = await order.save()
             res.json({message: 'Your order has been successfully placed, thanks for using our platform', order: updatedOrder})
         } else {
-            res.send({error: 'Your payment was not completed!!!'})
+            res.json({error: 'Your payment was not completed!!!'})
         }
         
     } else {

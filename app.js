@@ -16,12 +16,6 @@ try{
     console.log(err);
 }
 
-
-
-// app.get('/', (req, res) =>{
-//     res.send('Server is ready')
-// }) 
-
 app.use('/api', userRouter)
 
 app.use('/api/products', productRouter)
