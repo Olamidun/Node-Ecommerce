@@ -57,6 +57,9 @@ const orderSchema = new Schema({
     },
     paidAt: {
         type: Date
+    },
+    paymentReference: {
+        type: String, required: false
     }
 }, {timestamps: true})
 
