@@ -2,7 +2,7 @@ const express = require('express')
 const expressAsyncHandler = require('express-async-handler')
 const { getMaxListeners } = require('../models/orderModel')
 const Order = require('../models/orderModel')
-let Flutterwave = require('../paymentConfig/payment')
+let Flutterwave = require('../config/payment')
 require('dotenv').config()
 
 const orderRouter = express.Router()

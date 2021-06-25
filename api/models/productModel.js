@@ -11,6 +11,9 @@ const productSchema = new Schema(
         image: {
             type: String, required: true
         },
+        cloudinary_id: {
+            type: String
+        },
         brand: {
             type: String, required: true
         },

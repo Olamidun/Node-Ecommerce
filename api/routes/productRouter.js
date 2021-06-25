@@ -1,4 +1,5 @@
 const express = require('express')
+const cloudinary = require('../config/cloudinary')
 const expressAsyncHandler = require('express-async-handler')
 const multer = require('multer')
 
@@ -7,7 +8,7 @@ const storage = multer.diskStorage({
         cb(null, './uploads/')
     },
     filename: (req, file, cb) =>{
-        cb(null, file.originalname)
+        cb(null, new Date().toISOString().replace(/:/g, '-') + '-' + file.originalname)
     },
 })
 
@@ -39,10 +40,14 @@ productRouter.get('/', expressAsyncHandler(async(req, res) =>{
 
 
 productRouter.post('/', authUser, upload.single('image'), expressAsyncHandler(async(req, res) =>{
-    console.log(req.file)
+
+    const uploadedImage = await cloudinary.uploader.upload(req.file.path)
+    console.log(uploadedImage)
+
     const product = new Product({
         name: req.body.name,
-        image: req.file.path, 
+        image: req.file.path,
+        cloudinary_id: uploadedImage.secure_url, 
         brand: req.body.brand,
         category: req.body.category,
         description: req.body.description,
@@ -55,7 +60,7 @@ productRouter.post('/', authUser, upload.single('image'), expressAsyncHandler(as
 
     const productsCreated = await product.save()
     res.status(201).json({message: 'Product has been created',
-    products: productsCreated})
+    results:productsCreated})
 }))
 
 productRouter.patch('/:id', authUser, expressAsyncHandler(async(req, res) =>{
