@@ -1,5 +1,6 @@
 const express = require('express')
-const cloudinary = require('../config/cloudinary')
+const {productsList, productCreate, productDelete, productUpdate, singleProduct} = require('../controller/productController')
+// const cloudinary = require('../config/cloudinary')
 const expressAsyncHandler = require('express-async-handler')
 const multer = require('multer')
 
@@ -18,7 +19,7 @@ const fileFilter = (req, file, cb) =>{
         // Accept a file
         cb(null, true);
     } else {
-        cb(new Error('Your image must have a jpeg or png extension'), false);
+        cb(new Error('Unsupported file format'), false);
     }
 }
 const upload = multer({storage: storage, 
@@ -27,69 +28,19 @@ const upload = multer({storage: storage,
     },
     fileFilter: fileFilter
 })
-const data = require('../data')
-const Product = require('../models/productModel')
+// const data = require('../data')
+// const Product = require('../models/productModel')
 const { authUser } = require('../utils')
 
 const productRouter = express.Router()
 
-productRouter.get('/', expressAsyncHandler(async(req, res) =>{
-    const products = await Product.find({})
-    res.send(products)
-}))
+productRouter.get('/', expressAsyncHandler(productsList))
 
+productRouter.post('/', authUser, upload.single('image'), expressAsyncHandler(productCreate))
 
-productRouter.post('/', authUser, upload.single('image'), expressAsyncHandler(async(req, res) =>{
+productRouter.patch('/:id', authUser, expressAsyncHandler(productUpdate))
 
-    const uploadedImage = await cloudinary.uploader.upload(req.file.path)
-    console.log(uploadedImage)
+productRouter.delete('/:id', authUser, expressAsyncHandler(productDelete))
 
-    const product = new Product({
-        name: req.body.name,
-        image: req.file.path,
-        cloudinary_id: uploadedImage.secure_url, 
-        brand: req.body.brand,
-        category: req.body.category,
-        description: req.body.description,
-        price: req.body.price,
-        countInStock: req.body.countInStock,
-        rating: req.body.rating,
-        numReviews: req.body.numReviews,
-        user: req.user._id 
-    })
-
-    const productsCreated = await product.save()
-    res.status(201).json({message: 'Product has been created',
-    results:productsCreated})
-}))
-
-productRouter.patch('/:id', authUser, expressAsyncHandler(async(req, res) =>{
-    const id = req.params.id
-    const update = req.body
-    const options = {new: true}
-    const product = await Product.findByIdAndUpdate(id, update, options)
-    res.send({message: 'Product updated', product: product})
-}))
-
-productRouter.delete('/:id', authUser, expressAsyncHandler(async(req, res) =>{
-    const id = req.params.id
-    const product = await Product.findByIdAndDelete(id)
-    res.send({message: 'Product has been deleted'})
-}))
-productRouter.get('/seed', expressAsyncHandler(async(req, res) =>{
- const createdProducts = await Product.insertMany(data.products)
-
- res.send({products: createdProducts})
-}))
-
-
-productRouter.get('/:id', expressAsyncHandler(async(req, res) =>{
-    const productDetails = await Product.findById(req.params.id)
-    if(productDetails){
-        res.send(productDetails)
-    }else{
-        res.status(404).send({'Error': 'Product cannot be found!'})
-    }
-    
-}))
+productRouter.get('/:id', expressAsyncHandler(singleProduct))
 module.exports = productRouter

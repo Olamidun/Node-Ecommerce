@@ -1,101 +1,19 @@
 const express = require('express')
 const expressAsyncHandler = require('express-async-handler')
-const { getMaxListeners } = require('../models/orderModel')
-const Order = require('../models/orderModel')
-let Flutterwave = require('../config/payment')
+const {verifyOrderPayment, payForOrder, createOrder, getOrder} = require('../controller/orderController')
+// const Order = require('../models/orderModel')
+// let Flutterwave = require('../config/payment')
 require('dotenv').config()
 
 const orderRouter = express.Router()
 
-let flutterwave = new Flutterwave(`${process.env.key}`)
+// let flutterwave = new Flutterwave(`${process.env.key}`)
 
-orderRouter.post('/', expressAsyncHandler(async(req, res) =>{
-    let reference = (length) =>{
-        var result = [];
-        var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-        var charactersLength = characters.length;
-        for ( var i = 0; i < length; i++ ) {
-            result.push(characters.charAt(Math.floor(Math.random() * 
-            charactersLength)));
-        }
-        return result.join('');
+orderRouter.post('/', expressAsyncHandler(createOrder))
 
-    }
-    if(req.body.orderItems.lenght === 0) {
-        res.status(400).send({message: 'Cart is empty'})
-    } else {
-        const order = new Order({
-            orderItems: req.body.orderItems,
-            shippingAddress: req.body.shippingAddress,
-            cartPrice: req.body.cartPrice,
-            shippingPrice: req.body.shippingPrice,
-            totalPrice: req.body.totalPrice,
-            paymentReference: reference(15)  
-        })
+orderRouter.get('/:id', expressAsyncHandler(getOrder))
 
-        const createdOrder = await order.save()
-        res.status(201).send({message: 'Your order has been created', order: createdOrder})
-    }
-}))
+orderRouter.get('/:id/payment', payForOrder)
 
-orderRouter.get('/:id', expressAsyncHandler(async(req, res) =>{
-    const order = await Order.findById(req.params.id)
-    if(order){
-        res.send(order)
-    }else{
-        res.status(404).send({message: 'Order not found'})
-    }
-
-}))
-
-orderRouter.get('/:id/payment', expressAsyncHandler(async(req, res) =>{
-    const order = await Order.findById(req.params.id)
-    // console.log(order)
-    if(order){
-    
-        let payload = {
-            "tx_ref": order.paymentReference,
-                "amount": order.totalPrice,
-                "currency": "NGN",
-                "redirect_url": `http://localhost:5000/api/orders/${order._id}/verifypayment`,
-                "payment_options": "card",
-                "customer":{
-                    "email": order.shippingAddress.email,
-                    "phonenumber": "08103087162",
-                    "name": order.shippingAddress.fullname,
-                },
-                "customizations":{
-                "title":"Pied Piper Payments",
-                "description":"Middleout isn't free. Pay the price",
-                "logo":"https://assets.piedpiper.com/logo.png"
-            }
-        }
-        const response = await flutterwave.payment(payload)
-        
-        res.send(response.data)
-        
-    }else{
-        res.status(404).send({message: 'Order not found'})
-    }
-}))
-
-orderRouter.get('/:id/verifypayment',  expressAsyncHandler(async(req, res) =>{
-    const order = await Order.findById(req.params.id)
-    const transactionId = req.query.transaction_id
-    if(order){
-        let response = await flutterwave.verifyPayment(transactionId)
-        console.log(response)
-        if(response.data.data.tx_ref === order.paymentReference && response.data.data.amount === order.totalPrice && response.data.status === "success"){
-            order.isPaid = true
-            order.paidAt = Date.now()
-            const updatedOrder = await order.save()
-            res.json({message: 'Your order has been successfully placed, thanks for using our platform', order: updatedOrder})
-        } else {
-            res.json({error: 'Your payment was not completed!!!'})
-        }
-        
-    } else {
-        res.status(404).send({message: 'Order not found'})
-    }
-}))
+orderRouter.get('/:id/verifypayment',  expressAsyncHandler(verifyOrderPayment))
 module.exports = orderRouter

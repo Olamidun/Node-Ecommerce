@@ -1,5 +1,4 @@
 const axios = require('axios')
-const { json } = require('express')
 
 
 class Flutterwave {
