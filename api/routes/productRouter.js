@@ -1,5 +1,5 @@
 const express = require('express')
-const {productsList, productCreate, productDelete, productUpdate, singleProduct} = require('../controller/productController')
+const {productsList, productCreate, productDelete, productUpdate, singleProduct, newRating, ratings, singleRating} = require('../controller/productController')
 // const cloudinary = require('../config/cloudinary')
 const expressAsyncHandler = require('express-async-handler')
 const multer = require('multer')
@@ -43,4 +43,8 @@ productRouter.patch('/:id', authUser, expressAsyncHandler(productUpdate))
 productRouter.delete('/:id', authUser, expressAsyncHandler(productDelete))
 
 productRouter.get('/:id', expressAsyncHandler(singleProduct))
+
+productRouter.post('/:id/rating', expressAsyncHandler(newRating))
+productRouter.get('/:id/ratings', expressAsyncHandler(ratings))
+productRouter.get('/:id/rating/:ratingId', expressAsyncHandler(singleRating))
 module.exports = productRouter

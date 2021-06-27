@@ -29,9 +29,6 @@ const productSchema = new Schema(
         countInStock: {
             type: Number, required: true
         },
-        rating: {
-            type: Number, required: true
-        },
         numReviews: {
             type: Number, required: true
         },
@@ -42,6 +39,22 @@ const productSchema = new Schema(
     }
 );
 
-const Product = mongoose.model('Product', productSchema)
+const productRatingSchema = new Schema(
+    {
+        rating: {
+            type: Number, required: true
+        },
+        numReviews: {
+            type: Number
+        },
+        reviews: {
+            type: String, required: true
+        },
+        product: {type:mongoose.Schema.Types.ObjectId, ref:'Product', required:true}
+    }
+)
 
-module.exports = Product
+const Product = mongoose.model('Product', productSchema)
+const ProductRating = mongoose.model('ProductRatingSchema', productRatingSchema)
+
+module.exports = {Product, ProductRating} 
