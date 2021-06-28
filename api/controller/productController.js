@@ -9,7 +9,7 @@ const {Product, ProductRating} = require('../models/productModel')
 
 const productsList = async(req, res) =>{
     const products = await Product.find({})
-    res.send(products)
+    res.json(products)
 }
 
 const productCreate = async(req, res) =>{
@@ -42,23 +42,23 @@ const productUpdate = async(req, res) =>{
     const update = req.body
     const options = {new: true}
     const product = await Product.findByIdAndUpdate(id, update, options)
-    res.send({message: 'Product updated', product: product})
+    res.json({message: 'Product updated', product: product})
 }
 
 
 const productDelete = async(req, res) =>{
     const id = req.params.id
     const product = await Product.findByIdAndDelete(id)
-    res.send({message: 'Product has been deleted'})
+    res.json({message: 'Product has been deleted'})
 }
 
 
 const singleProduct = async(req, res) =>{
     const productDetails = await Product.findById(req.params.id)
     if(productDetails){
-        res.send(productDetails)
+        res.json(productDetails)
     }else{
-        res.status(404).send({'Error': 'Product cannot be found!'})
+        res.status(404).json({'Error': 'Product cannot be found!'})
     }
     
 }

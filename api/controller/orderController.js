@@ -19,7 +19,7 @@ const createOrder = async(req, res) =>{
 
     }
     if(req.body.orderItems.lenght === 0) {
-        res.status(400).send({message: 'Cart is empty'})
+        res.status(400).json({message: 'Cart is empty'})
     } else {
         const order = new Order({
             orderItems: req.body.orderItems,
@@ -31,16 +31,16 @@ const createOrder = async(req, res) =>{
         })
 
         const createdOrder = await order.save()
-        res.status(201).send({message: 'Your order has been created', order: createdOrder})
+        res.status(201).json({message: 'Your order has been created', order: createdOrder})
     }
 }
 
 const getOrder = async(req, res) =>{
     const order = await Order.findById(req.params.id)
     if(order){
-        res.send(order)
+        res.json(order)
     }else{
-        res.status(404).send({message: 'Order not found'})
+        res.status(404).json({message: 'Order not found'})
     }
 
 }
@@ -69,10 +69,10 @@ const payForOrder = async(req, res) =>{
         }
         const response = await flutterwave.payment(payload)
         
-        res.send(response.data)
+        res.json(response.data)
         
     }else{
-        res.status(404).send({message: 'Order not found'})
+        res.status(404).json({message: 'Order not found'})
     }
 }
 
@@ -92,7 +92,7 @@ const verifyOrderPayment = async(req, res) =>{
         }
         
     } else {
-        res.status(404).send({message: 'Order not found'})
+        res.status(404).json({message: 'Order not found'})
     }
 }
 
