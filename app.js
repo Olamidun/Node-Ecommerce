@@ -11,11 +11,12 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 const port = process.env.PORT || 5000
 try{
-    mongoose.connect('mongodb://localhost:27017/nodecommerce', {useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true})
+mongoose.connect(process.env.MONGODB_URI, {useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true})
+    // mongodb+srv://8SgLP8Dhd1PJ3F21@@nodeecommerce.qmtrr.mongodb.net/myFirstDatabase?retryWrites=true&w=majority
 }catch(err){
     console.log(err);
 }
-
+// mongodb://localhost:27017/nodecommerce
 app.use('/api', userRouter)
 
 app.use('/api/products', productRouter)
